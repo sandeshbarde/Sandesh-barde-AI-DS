@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sandesh_portfolio_db
+    environment:
+      POSTGRES_USER: portfolio_user
+      POSTGRES_PASSWORD: portfolio_password
+      POSTGRES_DB: sandesh_portfolio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio_user -d sandesh_portfolio"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sandesh_portfolio_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+psycopg://portfolio_user:portfolio_password@postgres:5432/sandesh_portfolio
+      SESSION_SECRET: e9a2c3b4f5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2
+      COOKIE_SECURE: "false"
+      FRONTEND_ORIGIN: http://localhost:5173
+      ADMIN_BOOTSTRAP_EMAIL: sandeshbarde2214@gmail.com
+      ADMIN_BOOTSTRAP_PASSWORD: SuperSecureAdmin2026!
+      CONTACT_RECEIVER_EMAIL: sandeshbarde2214@gmail.com
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sandesh_portfolio_web
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

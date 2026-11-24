@@ -1,0 +1,35 @@
+# Environment & Local Secrets
+.env
+*.env.local
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/__pycache__/
+backend/*/__pycache__/
+.venv/
+backend/.venv/
+*.db
+*.sqlite3
+backend/portfolio.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+coverage/
+.pytest_cache/
+test-results/
+playwright-report/
